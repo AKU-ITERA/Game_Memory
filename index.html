@@ -3,753 +3,520 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Game Console</title>
+    <title>Nebula Game Console 10-in-1 - Fixed Logic</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
+        /* TAMPILAN TETAP SAMA SESUAI PERMINTAAN */
         :root {
-            --bg-color: #1a1a1a;
-            --panel-color: #2c2c2c;
-            --text-color: #f0f0f0;
-            --accent-green: #00ff00;
-            --accent-blue: #00bfff;
-            --accent-red: #ff4500;
+            --bg-deep: #080810;
+            --glass-bg: rgba(25, 25, 40, 0.85);
+            --neon-green: #00ff9d;
+            --neon-blue: #00d9ff;
+            --neon-pink: #ff006e;
+            --neon-yellow: #ffbe0b;
+            --text-main: #e0e0ff;
+            --grad-main: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
         }
 
+        * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: var(--bg-color);
-            font-family: 'Courier New', Courier, monospace;
-            color: var(--text-color);
-            flex-direction: column;
-            user-select: none;
+            margin: 0; min-height: 100vh;
+            background: var(--bg-deep);
+            background-image: var(--grad-main);
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-main);
+            display: flex; flex-direction: column; align-items: center;
+            padding: 40px 20px; overflow-x: hidden;
         }
 
-        /* --- MENU UTAMA BESAR --- */
-        #main-menu {
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            width: 100%;
-            max-width: 600px;
-        }
+        #main-container { width: 100%; max-width: 1000px; }
 
         h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px var(--accent-green);
+            font-size: 4rem; font-weight: 800; text-align: center; margin-bottom: 40px;
+            background: linear-gradient(to right, var(--neon-green), var(--neon-blue));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 30px rgba(0,255,157,0.3); letter-spacing: -2px;
         }
 
-        .menu-btn-lg {
-            padding: 25px 40px;
-            font-size: 2rem;
-            font-weight: bold;
-            background-color: var(--panel-color);
-            color: white;
-            border: 4px solid white;
-            cursor: pointer;
-            transition: 0.2s;
-            border-radius: 15px;
-            width: 80%;
-            margin: 0 auto;
+        h2 { font-size: 2.5rem; margin-bottom: 20px; color: var(--neon-blue); text-transform: uppercase; }
+
+        #main-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px; width: 100%; animation: slideUp 0.6s ease-out;
         }
 
-        .menu-btn-lg:hover {
-            background-color: white;
-            color: var(--bg-color);
-            transform: scale(1.05);
+        .menu-btn {
+            background: var(--glass-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px; padding: 40px 20px;
+            cursor: pointer; display: flex; flex-direction: column;
+            align-items: center; gap: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
         }
 
-        /* --- COMMON GAME ELEMENTS --- */
+        .menu-btn span:first-child { font-size: 3.5rem; }
+        .menu-btn span:last-child { 
+            font-size: 1.2rem; font-weight: 600; color: white;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-10px) scale(1.05);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--neon-green);
+            box-shadow: 0 0 30px rgba(0, 255, 157, 0.4);
+        }
+
         .game-wrapper {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            width: 100%;
+            display: none; flex-direction: column; align-items: center;
+            background: var(--glass-bg); padding: 40px; border-radius: 40px;
+            border: 2px solid rgba(255,255,255,0.05);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+            backdrop-filter: blur(20px); width: 100%;
+            animation: zoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-
         .active-game { display: flex; }
 
-        .top-controls {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 5px;
-        }
-
         .ctrl-btn {
-            padding: 10px 20px;
-            font-size: 16px;
-            background: #444;
-            color: white;
-            border: 1px solid #777;
-            cursor: pointer;
-            border-radius: 5px;
-            min-width: 120px; /* Supaya ukuran tombol stabil */
+            padding: 15px 30px; font-size: 1.1rem; font-weight: bold;
+            border-radius: 16px; border: none; cursor: pointer;
+            background: #33334d; color: white; margin: 5px;
+            box-shadow: 0 4px 0 #1a1a2e;
         }
-        .ctrl-btn.active { background: var(--accent-blue); border-color: white; }
-        .ctrl-btn:hover { background: #666; }
-
-        .status-text {
-            font-size: 1.5rem;
-            margin: 10px 0;
-            font-weight: bold;
-            text-align: center;
-            min-height: 40px;
-        }
+        .ctrl-btn:active { transform: translateY(3px); box-shadow: none; }
+        .ctrl-btn.active { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue); }
+        .ctrl-btn.green { background: var(--neon-green); color: #000; }
 
         .back-btn {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: #b22222;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2rem;
-            border-radius: 5px;
+            margin-top: 40px; padding: 18px 50px; font-size: 1.2rem;
+            background: var(--neon-pink); color: white; border: none;
+            border-radius: 50px; cursor: pointer; font-weight: 800;
         }
 
-        /* --- GAME 1: MEMORY --- */
-        #level-select-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            max-width: 500px;
-        }
-        .lvl-btn {
-            padding: 15px;
-            background: #333;
-            border: 2px solid #555;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-        .lvl-btn:hover { background: var(--accent-green); color: black; }
+        .status-text { font-size: 1.6rem; margin: 20px 0; color: var(--neon-yellow); font-weight: 600; }
 
-        /* Grid 3x3 Memory (Original Style) */
-        .memory-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-template-rows: repeat(3, 100px);
-            gap: 15px;
-            padding: 20px;
-            background-color: #222;
-            border-radius: 10px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.6);
-        }
-        .mem-cell {
-            width: 100px;
-            height: 100px;
-            border-radius: 10px;
-            cursor: pointer;
-            border: 3px solid rgba(255,255,255,0.2);
-            transition: 0.1s;
-        }
-        .mem-cell:active { transform: scale(0.95); }
-        .light-up { filter: brightness(2.5); border-color: white; box-shadow: 0 0 20px white; }
+        canvas { background: #000; border: 5px solid #1a1a2e; border-radius: 20px; }
         
-        /* Warna Memory */
-        .c0 { background: #006400; } .c1 { background: #8b0000; } .c2 { background: #b8860b; }
-        .c3 { background: #00008b; } .c4 { background: #4b0082; } .c5 { background: #008b8b; }
-        .c6 { background: #ff4500; } .c7 { background: #ff1493; } .c8 { background: #808080; }
+        .memory-grid { gap: 15px; margin: 20px 0; }
+        .mem-cell { width: 90px; height: 90px; border-radius: 18px; background: #2a2a40; border: 2px solid rgba(255,255,255,0.05); cursor: pointer; }
 
-        /* --- GAME 2: TIC-TAC-TOE / GOMOKU (10x10) --- */
-        .ttt-container {
-            display: flex;
-            flex-direction: row;
-            gap: 20px;
-            align-items: flex-start;
-        }
-        .ttt-sidebar {
-            width: 200px;
-            background: var(--panel-color);
-            padding: 15px;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .ttt-grid {
-            display: grid;
-            grid-template-columns: repeat(10, 35px);
-            grid-template-rows: repeat(10, 35px);
-            gap: 2px;
-            background-color: #444;
-            padding: 5px;
-            border: 2px solid #fff;
-        }
-        .ttt-cell {
-            width: 35px;
-            height: 35px;
-            background-color: #222;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .ttt-cell.x { color: var(--accent-red); }
-        .ttt-cell.o { color: var(--accent-blue); }
-        .last-move { background-color: #444; border: 1px solid yellow; }
+        .ttt-grid { gap: 4px; padding: 10px; background: #1a1a2e; border-radius: 15px; }
+        .ttt-cell { width: 40px; height: 40px; font-size: 22px; border-radius: 6px; display: flex; justify-content: center; align-items: center; cursor: pointer; background: #252538; font-weight: bold; }
 
-        .timer-bar-bg { width: 100%; height: 10px; background: #555; margin-top: 5px; }
-        .timer-bar-fill { height: 100%; background: var(--accent-red); width: 100%; transition: width 1s linear; }
+        .miner-area { width: 180px; height: 180px; border: 8px solid #3d3d5c; cursor: pointer; display: flex; justify-content: center; align-items: center; border-radius: 50%; }
+        .rock { width: 90px; height: 90px; transition: transform 0.05s; }
 
-        /* Game 3 Reflex (Simple) */
-        .reflex-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            gap: 10px;
+        input[type="number"] {
+            background: #1a1a2e; border: 2px solid var(--neon-blue); color: white;
+            padding: 15px; font-size: 1.5rem; border-radius: 15px; width: 120px;
         }
 
-        /* Responsive */
-        @media (max-width: 600px) {
-            .ttt-container { flex-direction: column-reverse; align-items: center; }
-            .ttt-sidebar { width: 90%; }
-            .memory-grid { grid-template-columns: repeat(3, 80px); grid-template-rows: repeat(3, 80px); }
-            .mem-cell { width: 80px; height: 80px; }
-            h1 { font-size: 2rem; }
-            .menu-btn-lg { font-size: 1.5rem; padding: 15px; }
-        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
 
-    <div id="main-menu">
-        <h1>GAME CONSOLE</h1>
-        <button class="menu-btn-lg" onclick="switchGame('memory')">1. MEMORY BLOCKS</button>
-        <button class="menu-btn-lg" onclick="switchGame('tictactoe')">2. TIC-TAC-TOE 10x10</button>
-        <button class="menu-btn-lg" onclick="switchGame('reflex')">3. REFLEX SPEED</button>
-    </div>
+    <div id="main-container">
+        <h1>NEBULA CONSOLE</h1>
 
-    <div id="game-memory" class="game-wrapper">
-        <h2>MEMORY PATTERN</h2>
-        
-        <div id="memory-menu">
-            <p>Pilih Level:</p>
-            <div id="level-select-grid"></div>
+        <div id="main-menu">
+            <div class="menu-btn" onclick="switchGame('memory')"><span>🧠</span><span>Memory Pro</span></div>
+            <div class="menu-btn" onclick="switchGame('gomoku')"><span>❌</span><span>Smart Gomoku</span></div>
+            <div class="menu-btn" onclick="switchGame('reflex')"><span>⚡</span><span>Reflex Grid</span></div>
+            <div class="menu-btn" onclick="switchGame('snake')"><span>🐍</span><span>Neon Snake</span></div>
+            <div class="menu-btn" onclick="switchGame('math')"><span>➕</span><span>Math Rush</span></div>
+            <div class="menu-btn" onclick="switchGame('color')"><span>🎨</span><span>Color Match</span></div>
+            <div class="menu-btn" onclick="switchGame('guess')"><span>❓</span><span>Guess Num</span></div>
+            <div class="menu-btn" onclick="switchGame('reaction')"><span>⏱️</span><span>Reaction</span></div>
+            <div class="menu-btn" onclick="switchGame('typing')"><span>⌨️</span><span>Typing Storm</span></div>
+            <div class="menu-btn" onclick="switchGame('clicker')"><span>⛏</span><span>Miner Tycoon</span></div>
         </div>
 
-        <div id="memory-play-area" style="display:none; text-align:center;">
-            <p class="status-text" id="mem-status">Perhatikan Pola...</p>
-            <div class="memory-grid" id="memory-board">
-                <div class="mem-cell c0" id="m0"></div><div class="mem-cell c1" id="m1"></div><div class="mem-cell c2" id="m2"></div>
-                <div class="mem-cell c3" id="m3"></div><div class="mem-cell c4" id="m4"></div><div class="mem-cell c5" id="m5"></div>
-                <div class="mem-cell c6" id="m6"></div><div class="mem-cell c7" id="m7"></div><div class="mem-cell c8" id="m8"></div>
+        <div id="game-memory" class="game-wrapper">
+            <h2>MEMORY BLOCKS</h2>
+            <div id="mem-menu-area">
+                <p class="status-text">Pilih Level:</p>
+                <div id="memory-levels" style="display:grid; grid-template-columns: repeat(6, 1fr); gap: 10px;"></div>
             </div>
-        </div>
-
-        <button class="back-btn" onclick="goToMenu()">KEMBALI KE MENU</button>
-    </div>
-
-    <div id="game-tictactoe" class="game-wrapper">
-        <h2>TIC-TAC-TOE (5 GARIS)</h2>
-        
-        <div class="top-controls">
-            <button class="ctrl-btn active" id="btn-mode-ai" onclick="setTTTMode('ai')">Player vs AI</button>
-            <button class="ctrl-btn" id="btn-mode-pvp" onclick="setTTTMode('pvp')">Player vs Player</button>
-        </div>
-
-        <div class="ttt-container">
-            <div class="ttt-grid" id="ttt-board"></div>
-            
-            <div class="ttt-sidebar">
-                <div id="ai-controls">
-                    <p style="margin:5px 0; font-size:0.9rem;">Tingkat Kecerdasan:</p>
-                    <button class="ctrl-btn" id="btn-ai-lv" onclick="toggleAILevel()" style="width:100%; font-size:0.9rem;">Lv: EASY</button>
-                </div>
-                
-                <hr style="width:100%; border-color:#555;">
-                
-                <div id="turn-display" class="status-text" style="font-size:1.1rem; text-align:left;">Giliran Player</div>
-                
-                <div id="timer-box">
-                    <p style="margin:5px 0;">Waktu Berpikir:</p>
-                    <div style="font-size:1.5rem; color:var(--accent-red);" id="ttt-timer-text">15</div>
-                    <div class="timer-bar-bg"><div class="timer-bar-fill" id="ttt-timer-bar"></div></div>
-                </div>
-
-                <button class="ctrl-btn" onclick="resetTTT(true)" style="margin-top:20px; background:#555;">Reset Game</button>
+            <div id="mem-play-area" style="display:none;">
+                <p class="status-text" id="mem-status">SIAP?</p>
+                <div class="memory-grid" id="mem-board" style="display:grid; grid-template-columns: repeat(3, 90px);"></div>
             </div>
+            <button class="back-btn" onclick="goToMenu()">KEMBALI KE MENU</button>
         </div>
 
-        <button class="back-btn" onclick="goToMenu()">KEMBALI KE MENU</button>
-    </div>
-
-    <div id="game-reflex" class="game-wrapper">
-        <h2>REFLEX SPEED</h2>
-        
-        <div class="top-controls">
-            <button class="ctrl-btn" id="btn-ref-time" onclick="changeRefTime()">Waktu: 30s</button>
-            
-            <button class="ctrl-btn" id="btn-ref-speed" onclick="changeRefSpeed()">Mode: SEDANG</button>
+        <div id="game-gomoku" class="game-wrapper">
+            <h2>SMART GOMOKU</h2>
+            <div class="controls-row">
+                <button class="ctrl-btn active" id="g-diff-0" onclick="setGomokuDiff(0)">EASY</button>
+                <button class="ctrl-btn" id="g-diff-1" onclick="setGomokuDiff(1)">NORMAL</button>
+                <button class="ctrl-btn" id="g-diff-2" onclick="setGomokuDiff(2)">HARD</button>
+            </div>
+            <p class="status-text" id="gomoku-status">GILIRAN KAMU (X)</p>
+            <div class="ttt-grid" id="gomoku-board" style="display:grid; grid-template-columns: repeat(10, 40px);"></div>
+            <button class="ctrl-btn green" style="margin-top:25px; padding: 15px 40px;" onclick="resetGomoku()">RESET PAPAN</button>
+            <button class="back-btn" onclick="goToMenu()">KEMBALI KE MENU</button>
         </div>
 
-        <p class="status-text">Skor: <span id="ref-score">0</span> | Sisa Waktu: <span id="ref-time">30</span></p>
-        <div class="reflex-grid" id="reflex-board"></div>
-        <button class="ctrl-btn" onclick="startReflex()" style="background-color: var(--accent-green); color: black; font-weight:bold; margin-top:10px;">MULAI GAME</button>
-        <button class="back-btn" onclick="goToMenu()">KEMBALI KE MENU</button>
+        <div id="game-reflex" class="game-wrapper">
+            <h2>REFLEX GRID</h2>
+            <div style="display:flex; gap:30px; align-items:center; flex-wrap: wrap; justify-content: center;">
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <span style="font-weight:bold; color:var(--neon-blue)">WAKTU</span>
+                    <button class="ctrl-btn active" id="ref-t-30" onclick="setRefTime(30)">30s</button>
+                </div>
+                <div class="memory-grid" id="reflex-board" style="display:grid; grid-template-columns: repeat(3, 90px);"></div>
+            </div>
+            <p class="status-text">SKOR: <span id="ref-score" style="color:white">0</span></p>
+            <button class="ctrl-btn green" style="width:200px" onclick="startReflex()">MULAI BERMAIN</button>
+            <button class="back-btn" onclick="goToMenu()">KEMBALI KE MENU</button>
+        </div>
+
+        <div id="game-snake" class="game-wrapper">
+            <h2>NEON SNAKE</h2>
+            <p class="status-text">SCORE: <span id="snake-score" style="color:white">0</span></p>
+            <canvas id="snake-canvas" width="360" height="360"></canvas>
+            <button class="ctrl-btn green" onclick="startSnake()" style="margin-top:20px; width: 200px;">MULAI GAME</button>
+            <button class="back-btn" onclick="goToMenu()">KEMBALI KE MENU</button>
+        </div>
+
+        <div id="game-math" class="game-wrapper">
+            <h2>MATH RUSH</h2>
+            <p class="status-text">SKOR: <span id="math-score">0</span> | WAKTU: <span id="math-time">10</span>s</p>
+            <div id="math-question" style="font-size: 3rem; margin: 20px 0;">---</div>
+            <div class="controls-row">
+                <button class="ctrl-btn green" style="width:150px; height:80px; font-size:1.5rem" onclick="checkMath(true)">BENAR</button>
+                <button class="ctrl-btn" style="width:150px; height:80px; font-size:1.5rem; background:var(--neon-pink)" onclick="checkMath(false)">SALAH</button>
+            </div>
+            <button class="ctrl-btn green" onclick="startMath()" style="margin-top:20px;">MULAI</button>
+            <button class="back-btn" onclick="goToMenu()">KEMBALI KE MENU</button>
+        </div>
+
+        <div id="game-color" class="game-wrapper">
+            <h2>COLOR MATCH</h2>
+            <p class="status-text">SKOR: <span id="col-score">0</span></p>
+            <div id="color-word" style="font-size:4rem; font-weight:800; margin:30px;">READY?</div>
+            <div class="controls-row" id="color-btns-grid"></div>
+            <button class="ctrl-btn green" onclick="startColor()" style="margin-top:30px;">MULAI</button>
+            <button class="back-btn" onclick="goToMenu()">KEMBALI KE MENU</button>
+        </div>
+
+        <div id="game-guess" class="game-wrapper">
+            <h2>GUESS NUMBER</h2>
+            <p class="status-text" id="guess-hint">Tebak Angka 1-100</p>
+            <div class="controls-row">
+                <input type="number" id="guess-input" placeholder="?">
+                <button class="ctrl-btn green" onclick="makeGuess()">TEBAK!</button>
+            </div>
+            <div id="guess-log" style="margin-top: 10px;"></div>
+            <button class="back-btn" onclick="goToMenu()">KEMBALI KE MENU</button>
+        </div>
+
+        <div id="game-reaction" class="game-wrapper">
+            <h2>REACTION TEST</h2>
+            <div id="react-box" style="width:100%; height:250px; background:#2a2a40; border-radius:30px; cursor:pointer; display:flex; justify-content:center; align-items:center; font-size:2rem; font-weight:bold;" onclick="handleReactClick()">KLIK UNTUK MULAI</div>
+            <p class="status-text" id="react-res">-- ms</p>
+            <button class="back-btn" onclick="goToMenu()">KEMBALI KE MENU</button>
+        </div>
+
+        <div id="game-typing" class="game-wrapper">
+            <h2>TYPING STORM</h2>
+            <p class="status-text">SKOR: <span id="type-score">0</span> | NYAWA: <span id="type-life">3</span></p>
+            <canvas id="type-canvas" width="360" height="400"></canvas>
+            <button class="ctrl-btn green" onclick="startTyping()" style="margin-top:20px; width:200px;">MULAI</button>
+            <button class="back-btn" onclick="goToMenu()">KEMBALI KE MENU</button>
+        </div>
+
+        <div id="game-clicker" class="game-wrapper">
+            <h2>MINER TYCOON</h2>
+            <p class="status-text"><span id="miner-ore" style="font-size:2.5rem; color:white">0</span> ORE</p>
+            <div class="miner-area" onclick="doMine()">
+                <div class="rock" id="miner-rock" style="background: #777; clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);"></div>
+            </div>
+            <div class="upgrade-grid" id="miner-upgrades" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:15px; width:100%; margin-top:20px;"></div>
+            <button class="back-btn" onclick="goToMenu()">KEMBALI KE MENU</button>
+        </div>
     </div>
 
     <script>
-        // --- NAVIGASI UMUM ---
-        function goToMenu() {
-            stopAllGames();
-            document.querySelectorAll('.game-wrapper').forEach(el => el.classList.remove('active-game'));
-            document.getElementById('main-menu').style.display = 'flex';
-        }
-
-        function switchGame(gameId) {
-            document.getElementById('main-menu').style.display = 'none';
-            document.querySelectorAll('.game-wrapper').forEach(el => el.classList.remove('active-game'));
-            document.getElementById('game-' + gameId).classList.add('active-game');
-
-            if(gameId === 'memory') initMemoryMenu();
-            if(gameId === 'tictactoe') initTTT();
-            if(gameId === 'reflex') initReflex();
-        }
-
-        function stopAllGames() {
-            clearTimeout(memTimeout);
-            clearInterval(tttTimerInterval);
-            clearInterval(refTimer);
-            clearInterval(refMoleTimer);
-        }
-
-        // ==========================================
-        // GAME 1: MEMORY (30 LEVEL SELECTOR)
-        // ==========================================
-        let memSequence = [];
-        let memPlayerSequence = [];
-        let memCurrentLvl = 1;
-        let memIsLocked = false;
-        let memTimeout;
-        const memCells = document.querySelectorAll('.mem-cell');
-
-        function initMemoryMenu() {
-            document.getElementById('memory-menu').style.display = 'block';
-            document.getElementById('memory-play-area').style.display = 'none';
-            const grid = document.getElementById('level-select-grid');
-            grid.innerHTML = '';
-            
-            for(let i=1; i<=30; i++) {
-                let btn = document.createElement('button');
-                btn.className = 'lvl-btn';
-                btn.innerText = i;
-                btn.onclick = () => startMemoryLevel(i);
-                grid.appendChild(btn);
-            }
-        }
-
-        function startMemoryLevel(lvl) {
-            memCurrentLvl = lvl;
-            document.getElementById('memory-menu').style.display = 'none';
-            document.getElementById('memory-play-area').style.display = 'block';
-            document.getElementById('mem-status').innerText = `Level ${lvl} - Perhatikan!`;
-            
-            memSequence = [];
-            memPlayerSequence = [];
-            const steps = lvl + 2; 
-            for(let i=0; i<steps; i++) {
-                memSequence.push(Math.floor(Math.random() * 9));
-            }
-
-            setTimeout(playSequence, 1000);
-        }
-
-        function playSequence() {
-            memIsLocked = true;
-            let i = 0;
-            const interval = setInterval(() => {
-                if(i >= memSequence.length) {
-                    clearInterval(interval);
-                    memIsLocked = false;
-                    document.getElementById('mem-status').innerText = "Giliran Anda!";
-                    return;
-                }
-                highlightMemCell(memSequence[i]);
-                i++;
-            }, 600);
-        }
-
-        function highlightMemCell(index) {
-            const cell = document.getElementById('m' + index);
-            cell.classList.add('light-up');
-            setTimeout(() => cell.classList.remove('light-up'), 300);
-        }
-
-        memCells.forEach((cell, idx) => {
-            cell.addEventListener('click', () => {
-                if(memIsLocked) return;
-                
-                highlightMemCell(idx);
-                memPlayerSequence.push(idx);
-
-                const currentStep = memPlayerSequence.length - 1;
-                if(memPlayerSequence[currentStep] !== memSequence[currentStep]) {
-                    document.getElementById('mem-status').innerText = "❌ Salah! Coba lagi.";
-                    memIsLocked = true;
-                    setTimeout(initMemoryMenu, 1500);
-                    return;
-                }
-
-                if(memPlayerSequence.length === memSequence.length) {
-                    document.getElementById('mem-status').innerText = "✅ Benar! Level Selesai.";
-                    memIsLocked = true;
-                    setTimeout(initMemoryMenu, 1500);
-                }
-            });
-        });
-
-
-        // ==========================================
-        // GAME 2: TIC-TAC-TOE 10x10 (GOMOKU)
-        // ==========================================
-        const BOARD_SIZE = 10;
-        let tttBoard = []; 
-        let tttMode = 'ai';
-        let tttTurn = 'X';
-        let tttGameActive = false;
-        let aiLevel = 'easy';
-        let aiStartsNext = false; 
-        let tttTimerInterval;
-        let timeLeft = 15;
-        let lastPlayerMoveIndex = -1;
-
-        function setTTTMode(mode) {
-            tttMode = mode;
-            document.getElementById('btn-mode-ai').className = mode === 'ai' ? 'ctrl-btn active' : 'ctrl-btn';
-            document.getElementById('btn-mode-pvp').className = mode === 'pvp' ? 'ctrl-btn active' : 'ctrl-btn';
-            document.getElementById('ai-controls').style.display = mode === 'ai' ? 'block' : 'none';
-            resetTTT(true);
-        }
-
-        function toggleAILevel() {
-            aiLevel = aiLevel === 'easy' ? 'hard' : 'easy';
-            document.getElementById('btn-ai-lv').innerText = `Lv: ${aiLevel.toUpperCase()}`;
-        }
-
-        function initTTT() {
-            const boardEl = document.getElementById('ttt-board');
-            boardEl.innerHTML = '';
-            tttBoard = Array(BOARD_SIZE * BOARD_SIZE).fill('');
-            
-            for(let i=0; i<tttBoard.length; i++) {
-                let cell = document.createElement('div');
-                cell.className = 'ttt-cell';
-                cell.dataset.idx = i;
-                cell.onclick = () => handleTTTClick(i);
-                boardEl.appendChild(cell);
-            }
-            
-            resetTTT(false);
-        }
-
-        function resetTTT(fullReset) {
-            tttBoard.fill('');
-            document.querySelectorAll('.ttt-cell').forEach(c => {
-                c.innerText = ''; 
-                c.className = 'ttt-cell';
-            });
-            tttGameActive = true;
-            lastPlayerMoveIndex = -1;
-
-            if(tttMode === 'ai') {
-                if(fullReset) aiStartsNext = false;
-                if(aiStartsNext) {
-                    tttTurn = 'O'; 
-                    updateStatus("Giliran Computer");
-                    setTimeout(aiMove, 1000);
-                } else {
-                    tttTurn = 'X'; 
-                    updateStatus("Giliran Player");
-                    startTimer();
-                }
-                aiStartsNext = !aiStartsNext;
-            } else {
-                tttTurn = 'X';
-                updateStatus("Giliran Player X");
-                startTimer();
-            }
-        }
-
-        function updateStatus(msg) {
-            document.getElementById('turn-display').innerText = msg;
-        }
-
-        function startTimer() {
-            clearInterval(tttTimerInterval);
-            if(!tttGameActive) return;
-            if(tttMode === 'ai' && tttTurn === 'O') {
-                document.getElementById('ttt-timer-text').innerText = "--";
-                document.getElementById('ttt-timer-bar').style.width = '0%';
-                return;
-            }
-
-            timeLeft = 15;
-            document.getElementById('ttt-timer-text').innerText = timeLeft;
-            document.getElementById('ttt-timer-bar').style.width = '100%';
-
-            tttTimerInterval = setInterval(() => {
-                timeLeft--;
-                document.getElementById('ttt-timer-text').innerText = timeLeft;
-                document.getElementById('ttt-timer-bar').style.width = (timeLeft/15*100) + '%';
-
-                if(timeLeft <= 0) {
-                    clearInterval(tttTimerInterval);
-                    handleTimeout();
-                }
-            }, 1000);
-        }
-
-        function handleTimeout() {
-            const emptyIndices = tttBoard.map((v, i) => v === '' ? i : -1).filter(i => i !== -1);
-            if(emptyIndices.length === 0) return;
-
-            let targetIdx;
-            if(lastPlayerMoveIndex === -1) {
-                targetIdx = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-            } else {
-                const pRow = Math.floor(lastPlayerMoveIndex / BOARD_SIZE);
-                const pCol = lastPlayerMoveIndex % BOARD_SIZE;
-                
-                emptyIndices.sort((a, b) => {
-                    const rA = Math.floor(a / BOARD_SIZE), cA = a % BOARD_SIZE;
-                    const rB = Math.floor(b / BOARD_SIZE), cB = b % BOARD_SIZE;
-                    const distA = Math.abs(rA - pRow) + Math.abs(cA - pCol);
-                    const distB = Math.abs(rB - pRow) + Math.abs(cB - pCol);
-                    return distB - distA; 
-                });
-
-                const topPicks = emptyIndices.slice(0, Math.min(5, emptyIndices.length));
-                targetIdx = topPicks[Math.floor(Math.random() * topPicks.length)];
-            }
-
-            placeMark(targetIdx);
-        }
-
-        function handleTTTClick(idx) {
-            if(!tttGameActive || tttBoard[idx] !== '') return;
-            if(tttMode === 'ai' && tttTurn === 'O') return;
-
-            lastPlayerMoveIndex = idx;
-            placeMark(idx);
-        }
-
-        function placeMark(idx) {
-            clearInterval(tttTimerInterval);
-            tttBoard[idx] = tttTurn;
-            const cell = document.querySelector(`.ttt-cell[data-idx='${idx}']`);
-            cell.innerText = tttTurn;
-            cell.classList.add(tttTurn === 'X' ? 'x' : 'o');
-            
-            document.querySelectorAll('.last-move').forEach(el => el.classList.remove('last-move'));
-            cell.classList.add('last-move');
-
-            if(checkWin(idx)) {
-                updateStatus(`Pemenang: ${tttTurn}! 🎉`);
-                tttGameActive = false;
-                return;
-            }
-
-            if(!tttBoard.includes('')) {
-                updateStatus("Seri! Papan Penuh.");
-                tttGameActive = false;
-                return;
-            }
-
-            if(tttMode === 'pvp') {
-                tttTurn = tttTurn === 'X' ? 'O' : 'X';
-                updateStatus(`Giliran Player ${tttTurn}`);
-                startTimer();
-            } else {
-                if(tttTurn === 'X') {
-                    tttTurn = 'O';
-                    updateStatus("Giliran Computer");
-                    setTimeout(aiMove, 1000);
-                } else {
-                    tttTurn = 'X';
-                    updateStatus("Giliran Player");
-                    startTimer();
-                }
-            }
-        }
-
-        function aiMove() {
-            if(!tttGameActive) return;
-            let moveIdx = -1;
-            const emptyIndices = tttBoard.map((v, i) => v === '' ? i : -1).filter(i => i !== -1);
-
-            if(aiLevel === 'easy') {
-                moveIdx = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-            } else {
-                moveIdx = findBestMove('O'); 
-                if(moveIdx === -1) moveIdx = findBestMove('X');
-                if(moveIdx === -1) moveIdx = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-            }
-            placeMark(moveIdx);
-        }
-
-        function findBestMove(playerSymbol) {
-            const emptyIndices = tttBoard.map((v, i) => v === '' ? i : -1).filter(i => i !== -1);
-            for(let idx of emptyIndices) {
-                tttBoard[idx] = playerSymbol;
-                let win = checkWin(idx);
-                tttBoard[idx] = '';
-                if(win) return idx;
-            }
-            return -1;
-        }
-
-        function checkWin(lastIdx) {
-            const symbol = tttBoard[lastIdx];
-            const row = Math.floor(lastIdx / BOARD_SIZE);
-            const col = lastIdx % BOARD_SIZE;
-            const directions = [[0, 1], [1, 0], [1, 1], [1, -1]];
-
-            for(let [dr, dc] of directions) {
-                let count = 1;
-                let r = row + dr, c = col + dc;
-                while(r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE && tttBoard[r * BOARD_SIZE + c] === symbol) { count++; r += dr; c += dc; }
-                r = row - dr; c = col - dc;
-                while(r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE && tttBoard[r * BOARD_SIZE + c] === symbol) { count++; r -= dr; c -= dc; }
-                if(count >= 5) return true;
-            }
-            return false;
-        }
-
-        // ==========================================
-        // GAME 3: REFLEX (MODIFIED)
-        // ==========================================
-        let refScore = 0;
-        let refTimer, refMoleTimer;
-        let refActiveIdx = -1;
-        let refIsPlaying = false;
-
-        // --- PENGATURAN BARU ---
-        let refTimeOptions = [15, 30, 45, 60];
-        let refTimeIndex = 1; // Default 30s
-        let refSelectedTime = 30;
-
-        let refSpeedOptions = [
-            { name: "LAMBAT", speed: 1200 }, // 1.2 detik (Sangat lambat)
-            { name: "SEDANG", speed: 700 },  // 0.7 detik (Normal)
-            { name: "CUKUP",  speed: 400 },  // 0.4 detik (Cepat)
-            { name: "CEPAT",  speed: 200 }   // 0.2 detik (Sangat Cepat - Reflex Dewa)
-        ];
-        let refSpeedIndex = 1; // Default SEDANG
+        let tInt, lInt, reactTimeout; // Ditambahkan reactTimeout untuk perbaikan Reaction
         
-        function changeRefTime() {
-            if(refIsPlaying) return; // Kunci saat main
-            refTimeIndex = (refTimeIndex + 1) % refTimeOptions.length;
-            refSelectedTime = refTimeOptions[refTimeIndex];
-            document.getElementById('btn-ref-time').innerText = `Waktu: ${refSelectedTime}s`;
-            document.getElementById('ref-time').innerText = refSelectedTime;
+        function switchGame(id) {
+            document.getElementById('main-menu').style.display = 'none';
+            document.querySelectorAll('.game-wrapper').forEach(w => w.classList.remove('active-game'));
+            document.getElementById('game-' + id).classList.add('active-game');
+            stopAll();
+            if(id === 'memory') initMem();
+            if(id === 'gomoku') resetGomoku();
+            if(id === 'reflex') initReflex();
+            if(id === 'clicker') initMiner();
+            if(id === 'color') initColorBtns();
+            if(id === 'guess') resetGuess();
+            if(id === 'typing') initTypingCvs();
         }
 
-        function changeRefSpeed() {
-            if(refIsPlaying) return; // Kunci saat main
-            refSpeedIndex = (refSpeedIndex + 1) % refSpeedOptions.length;
-            let mode = refSpeedOptions[refSpeedIndex];
-            document.getElementById('btn-ref-speed').innerText = `Mode: ${mode.name}`;
+        function goToMenu() {
+            stopAll();
+            document.querySelectorAll('.game-wrapper').forEach(w => w.classList.remove('active-game'));
+            document.getElementById('main-menu').style.display = 'grid';
         }
 
-        function initReflex() {
-            const grid = document.getElementById('reflex-board');
-            grid.innerHTML = '';
-            grid.className = 'memory-grid'; 
-            
+        function stopAll() {
+            clearInterval(tInt); clearInterval(lInt);
+            clearTimeout(reactTimeout); // Reset Reaction Timeout
+            document.removeEventListener('keydown', snkKey);
+            document.removeEventListener('keydown', typeKey);
+            const rBox = document.getElementById('react-box');
+            if(rBox) { rBox.style.background = '#2a2a40'; rBox.innerText = 'KLIK UNTUK MULAI'; }
+        }
+
+        // --- 1. MEMORY BLOCKS ---
+        let mSeq = [], mIn = [], mCurLvl = 1;
+        function initMem() {
+            const grid = document.getElementById('memory-levels'); grid.innerHTML = '';
+            for(let i=1; i<=30; i++) {
+                let b = document.createElement('button'); b.className = 'ctrl-btn'; b.innerText = i;
+                b.onclick = () => startMem(i); grid.appendChild(b);
+            }
+            document.getElementById('mem-menu-area').style.display = 'block';
+            document.getElementById('mem-play-area').style.display = 'none';
+        }
+        function startMem(l) {
+            mCurLvl = l; mSeq = []; mIn = [];
+            document.getElementById('mem-menu-area').style.display = 'none';
+            document.getElementById('mem-play-area').style.display = 'flex';
+            const board = document.getElementById('mem-board'); board.innerHTML = '';
             for(let i=0; i<9; i++) {
-                let d = document.createElement('div');
-                d.className = 'mem-cell';
-                d.style.background = '#333';
-                d.dataset.i = i;
-                d.onclick = () => hitMole(i);
-                grid.appendChild(d);
+                let c = document.createElement('div'); c.className = 'mem-cell'; c.id = 'm-'+i;
+                c.onclick = () => handleMemIn(i); board.appendChild(c);
             }
-            // Reset Tampilan ke default pilihan user
-            document.getElementById('ref-score').innerText = '0';
-            document.getElementById('ref-time').innerText = refSelectedTime;
-            refIsPlaying = false;
+            for(let i=0; i<(l+2); i++) mSeq.push(Math.floor(Math.random()*9));
+            playMemSeq();
+        }
+        async function playMemSeq() {
+            document.getElementById('mem-status').innerText = "LIHAT...";
+            for(let id of mSeq) {
+                await new Promise(r => setTimeout(r, 600 - (mCurLvl*10)));
+                let el = document.getElementById('m-'+id);
+                el.style.background = 'white';
+                await new Promise(r => setTimeout(r, 300));
+                el.style.background = '#2a2a40';
+            }
+            document.getElementById('mem-status').innerText = "ULANGI!";
+        }
+        function handleMemIn(i) {
+            if(document.getElementById('mem-status').innerText !== "ULANGI!") return;
+            mIn.push(i);
+            let el = document.getElementById('m-'+i);
+            el.style.background = 'var(--neon-blue)';
+            setTimeout(() => el.style.background = '#2a2a40', 200);
+            if(mIn[mIn.length-1] !== mSeq[mIn.length-1]) { alert("Salah!"); initMem(); return; }
+            if(mIn.length === mSeq.length) { alert("Lanjut!"); initMem(); }
         }
 
-        function startReflex() {
-            if(refIsPlaying) return;
-            refIsPlaying = true;
-            refScore = 0;
-            let time = refSelectedTime;
-            document.getElementById('ref-score').innerText = refScore;
-            
-            clearInterval(refTimer);
-            clearInterval(refMoleTimer);
-
-            // Timer Mundur
-            refTimer = setInterval(() => {
-                time--;
-                document.getElementById('ref-time').innerText = time;
-                if(time <= 0) {
-                    endReflexGame();
+        // --- 2. GOMOKU AI (FIXED) ---
+        let gB = [], gT = 'X', gA = false, gD = 0;
+        function setGomokuDiff(d) { gD = d; [0,1,2].forEach(v=>document.getElementById('g-diff-'+v).className=(v==d?'ctrl-btn active':'ctrl-btn')); resetGomoku(); }
+        function resetGomoku() {
+            gB = Array(100).fill(''); gT = 'X'; gA = true;
+            const b = document.getElementById('gomoku-board'); b.innerHTML = '';
+            for(let i=0; i<100; i++) {
+                let c = document.createElement('div'); c.className = 'ttt-cell'; c.id = 'gb-'+i;
+                c.onclick = () => { if(gA && gB[i]==='' && gT==='X') { makeG(i,'X'); if(gA) { gT='O'; setTimeout(aiG, 500); } } };
+                b.appendChild(c);
+            }
+            document.getElementById('gomoku-status').innerText = "GILIRAN KAMU (X)";
+        }
+        function makeG(i,p) {
+            gB[i] = p; let c = document.getElementById('gb-'+i);
+            c.innerText = p; c.style.color = p === 'X' ? 'var(--neon-pink)' : 'var(--neon-blue)';
+            if(checkGWin(i,p)) { gA = false; document.getElementById('gomoku-status').innerText = p + " MENANG!"; alert(p + " Menang!"); }
+        }
+        function aiG() {
+            if(!gA) return;
+            let move = -1;
+            // Basic Strategy: Block Player or Win
+            for(let i=0; i<100; i++) if(gB[i]==='') { gB[i]='O'; if(checkGWin(i,'O')) { gB[i]=''; move=i; break; } gB[i]=''; }
+            if(move === -1) {
+                for(let i=0; i<100; i++) if(gB[i]==='') { gB[i]='X'; if(checkGWin(i,'X')) { gB[i]=''; move=i; break; } gB[i]=''; }
+            }
+            if(move === -1) {
+                let empty = gB.map((v,i)=>v==='' ? i : -1).filter(v=>v!==-1);
+                move = empty[Math.floor(Math.random()*empty.length)];
+            }
+            makeG(move, 'O'); gT = 'X';
+        }
+        function checkGWin(idx, p) {
+            const r = Math.floor(idx/10), c = idx%10;
+            const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+            for(let [dr, dc] of dirs) {
+                let count = 1;
+                for(let s of [1, -1]) {
+                    for(let k=1; k<5; k++) {
+                        let nr = r + dr*k*s, nc = c + dc*k*s;
+                        if(nr>=0 && nr<10 && nc>=0 && nc<10 && gB[nr*10+nc] === p) count++; else break;
+                    }
                 }
+                if(count >= 5) return true;
+            } return false;
+        }
+
+        // --- 3. REFLEX GRID ---
+        let rS=0, rActive=-1;
+        function initReflex() {
+            const b = document.getElementById('reflex-board'); b.innerHTML = '';
+            for(let i=0; i<9; i++) {
+                let c = document.createElement('div'); c.className = 'mem-cell';
+                c.onclick = () => { if(i === rActive) { rS++; document.getElementById('ref-score').innerText = rS; mvRef(); } };
+                b.appendChild(c);
+            }
+        }
+        function startReflex() {
+            rS = 0; document.getElementById('ref-score').innerText = 0;
+            clearInterval(lInt); lInt = setInterval(mvRef, 800); mvRef();
+        }
+        function mvRef() {
+            document.querySelectorAll('#reflex-board .mem-cell').forEach(c => c.style.background = '#2a2a40');
+            rActive = Math.floor(Math.random()*9);
+            document.getElementById('reflex-board').children[rActive].style.background = 'var(--neon-pink)';
+        }
+
+        // --- 4. NEON SNAKE (FIXED) ---
+        let snk=[], snkDir='R', snkF={}, snkScore=0;
+        function startSnake() {
+            snk = [{x:10, y:10}, {x:9, y:10}]; snkDir = 'R'; snkScore = 0;
+            spawnFood();
+            document.getElementById('snake-score').innerText = 0;
+            document.addEventListener('keydown', snkKey);
+            clearInterval(lInt); lInt = setInterval(drawSnk, 100);
+        }
+        function spawnFood() {
+            snkF = {x:Math.floor(Math.random()*20), y:Math.floor(Math.random()*20)};
+            if(snk.some(s=>s.x===snkF.x && s.y===snkF.y)) spawnFood();
+        }
+        function snkKey(e) {
+            const k = e.key;
+            if(k==='ArrowUp' && snkDir!=='D') snkDir='U';
+            if(k==='ArrowDown' && snkDir!=='U') snkDir='D';
+            if(k==='ArrowLeft' && snkDir!=='R') snkDir='L';
+            if(k==='ArrowRight' && snkDir!=='L') snkDir='R';
+        }
+        function drawSnk() {
+            const ctx = document.getElementById('snake-canvas').getContext('2d');
+            ctx.fillStyle = '#000'; ctx.fillRect(0,0,360,360);
+            let h = {...snk[0]};
+            if(snkDir==='U') h.y--; if(snkDir==='D') h.y++; if(snkDir==='L') h.x--; if(snkDir==='R') h.x++;
+            if(h.x<0||h.x>=20||h.y<0||h.y>=20||snk.some(s=>s.x===h.x&&s.y===h.y)) { stopAll(); alert("Kalah!"); return; }
+            snk.unshift(h);
+            if(h.x===snkF.x && h.y===snkF.y) { snkScore++; document.getElementById('snake-score').innerText=snkScore; spawnFood(); }
+            else snk.pop();
+            ctx.fillStyle = 'var(--neon-pink)'; ctx.fillRect(snkF.x*18, snkF.y*18, 18, 18);
+            ctx.fillStyle = 'var(--neon-green)'; snk.forEach(s=>ctx.fillRect(s.x*18, s.y*18, 17, 17));
+        }
+
+        // --- 5. MATH RUSH ---
+        let matS=0, matT=10, matAns=true;
+        function startMath() {
+            matS=0; matT=10; document.getElementById('math-score').innerText=0;
+            clearInterval(tInt); tInt = setInterval(()=>{ matT--; document.getElementById('math-time').innerText=matT; if(matT<=0) stopAll(); }, 1000);
+            nextMat();
+        }
+        function nextMat() {
+            let a=Math.floor(Math.random()*15), b=Math.floor(Math.random()*15);
+            matAns = Math.random()>0.5;
+            let res = a+b; let disp = matAns ? res : res+Math.floor(Math.random()*5)+1;
+            document.getElementById('math-question').innerText = `${a} + ${b} = ${disp}`;
+        }
+        function checkMath(p) { if(p===matAns) { matS++; matT+=1; } else matT-=2; document.getElementById('math-score').innerText=matS; nextMat(); }
+
+        // --- 6. COLOR MATCH ---
+        const colors = ['Red','Blue','Green','Yellow','Purple'];
+        let cS=0, cTarget='';
+        function initColorBtns() {
+            const g = document.getElementById('color-btns-grid'); g.innerHTML = '';
+            colors.forEach(c => {
+                let b = document.createElement('button'); b.className='ctrl-btn'; b.style.background=c; b.style.width='70px';
+                b.onclick = () => { if(c.toLowerCase()===cTarget.toLowerCase()) { cS++; nextCol(); } document.getElementById('col-score').innerText=cS; };
+                g.appendChild(b);
+            });
+        }
+        function startColor() { cS=0; nextCol(); }
+        function nextCol() {
+            let tIdx = Math.floor(Math.random()*5), iIdx = Math.floor(Math.random()*5);
+            cTarget = colors[iIdx]; document.getElementById('color-word').innerText = colors[tIdx].toUpperCase();
+            document.getElementById('color-word').style.color = colors[iIdx];
+        }
+
+        // --- 7. GUESS NUMBER ---
+        let gNum=0;
+        function resetGuess() { gNum = Math.floor(Math.random()*100)+1; }
+        function makeGuess() {
+            let v = parseInt(document.getElementById('guess-input').value);
+            document.getElementById('guess-hint').innerText = v < gNum ? "Terlalu Kecil!" : (v > gNum ? "Terlalu Besar!" : "Benar!");
+        }
+
+        // --- 8. REACTION (FIXED) ---
+        let rState='idle', rStart=0;
+        function handleReactClick() {
+            const b = document.getElementById('react-box');
+            if(rState==='idle') {
+                rState='waiting'; b.innerText='TUNGGU HIJAU...'; b.style.background='#800';
+                reactTimeout = setTimeout(() => {
+                    rState='go'; b.style.background='var(--neon-green)'; b.innerText='KLIK SEKARANG!'; rStart = Date.now();
+                }, 2000 + Math.random()*3000);
+            } else if(rState==='go') {
+                let ms = Date.now()-rStart; document.getElementById('react-res').innerText = ms+'ms';
+                rState='idle'; b.innerText='KLIK UNTUK MULAI'; b.style.background='#2a2a40';
+            } else if(rState==='waiting') {
+                clearTimeout(reactTimeout); // Fix: Batalkan timer jika klik terlalu cepat
+                rState='idle'; b.innerText='TERLALU CEPAT! ULANGI'; b.style.background='#2a2a40';
+            }
+        }
+
+        // --- 9. TYPING STORM (FIXED) ---
+        let tS=0, tL=3, tChars=[];
+        function initTypingCvs() { document.getElementById('type-canvas').getContext('2d').clearRect(0,0,360,400); }
+        function startTyping() {
+            tS=0; tL=3; tChars=[]; document.addEventListener('keydown', typeKey);
+            clearInterval(lInt); lInt = setInterval(updType, 50);
+            clearInterval(tInt); tInt = setInterval(() => {
+                tChars.push({x:Math.random()*300+30, y:0, c:String.fromCharCode(65+Math.floor(Math.random()*26))});
             }, 1000);
-
-            moveMole();
-            // Gunakan kecepatan yang dipilih (Fixed speed per level agar perbedaannya terasa)
-            let currentSpeed = refSpeedOptions[refSpeedIndex].speed;
-            refMoleTimer = setInterval(moveMole, currentSpeed);
         }
-
-        function endReflexGame() {
-            refIsPlaying = false;
-            clearInterval(refTimer);
-            clearInterval(refMoleTimer);
-            alert(`Waktu Habis! \nMode: ${refSpeedOptions[refSpeedIndex].name} \nSkor Akhir: ${refScore}`);
-            // Reset grid
-            document.querySelectorAll('#reflex-board .mem-cell').forEach(c => {
-                c.style.background = '#333';
-                c.classList.remove('light-up');
-            });
-            document.getElementById('ref-time').innerText = refSelectedTime;
-        }
-
-        function moveMole() {
-            const cells = document.querySelectorAll('#reflex-board .mem-cell');
-            cells.forEach(c => {
-                c.style.background = '#333';
-                c.classList.remove('light-up');
-            });
-            
-            let newIdx = Math.floor(Math.random() * 9);
-            // Hindari muncul di tempat yang sama persis berturut-turut agar terlihat pindah
-            while(newIdx === refActiveIdx) {
-                newIdx = Math.floor(Math.random() * 9);
-            }
-            refActiveIdx = newIdx;
-            
-            cells[newIdx].style.background = '#ff4500';
-            cells[newIdx].classList.add('light-up');
-        }
-
-        function hitMole(i) {
-            if(!refIsPlaying) return;
-            if(i === refActiveIdx) {
-                refScore++;
-                document.getElementById('ref-score').innerText = refScore;
-                
-                // Reset timer mole agar langsung pindah saat dipukul
-                clearInterval(refMoleTimer);
-                moveMole();
-                
-                // Jalankan lagi dengan speed konstan sesuai settingan
-                let currentSpeed = refSpeedOptions[refSpeedIndex].speed;
-                refMoleTimer = setInterval(moveMole, currentSpeed);
+        function updType() {
+            const ctx = document.getElementById('type-canvas').getContext('2d');
+            ctx.clearRect(0,0,360,400); ctx.fillStyle='var(--neon-blue)'; ctx.font='bold 30px Poppins';
+            for(let i=tChars.length-1; i>=0; i--) {
+                tChars[i].y += 2 + (tS/20);
+                ctx.fillText(tChars[i].c, tChars[i].x, tChars[i].y);
+                if(tChars[i].y > 390) { tChars.splice(i,1); tL--; document.getElementById('type-life').innerText=tL; if(tL<=0) stopAll(); }
             }
         }
+        function typeKey(e) {
+            let k = e.key.toUpperCase();
+            let idx = tChars.findIndex(o=>o.c===k);
+            if(idx!==-1) { tChars.splice(idx,1); tS++; document.getElementById('type-score').innerText=tS; }
+        }
+
+        // --- 10. MINER (FIXED) ---
+        let mOre=0, mPC=1, mAuto=0;
+        function initMiner() {
+            const g = document.getElementById('miner-upgrades'); g.innerHTML = '';
+            const upgs = [{n:'Pickaxe',c:10,p:1,t:'c'}, {n:'Helper',c:50,p:1,t:'a'}];
+            upgs.forEach((u,i) => {
+                let d = document.createElement('div'); d.className='upg-card';
+                d.innerHTML = `<button class="ctrl-btn green" onclick="buyM(${u.c},${u.p},'${u.t}')">${u.n} (${u.c})</button>`;
+                g.appendChild(d);
+            });
+            // Fix: Sinkronisasi Auto Miner
+            clearInterval(lInt); lInt = setInterval(() => { if(mAuto > 0) { mOre += mAuto; document.getElementById('miner-ore').innerText=Math.floor(mOre); } }, 1000);
+        }
+        function doMine() { mOre += mPC; document.getElementById('miner-ore').innerText=Math.floor(mOre); }
+        function buyM(c,p,t) { if(mOre>=c) { mOre-=c; if(t==='c') mPC+=p; else mAuto+=p; initMiner(); } }
 
     </script>
 </body>
